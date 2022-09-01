@@ -2,6 +2,10 @@ import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import { IconAlertCircleFill16 } from '@hashicorp/flight-icons/svg-react/alert-circle-fill-16'
 import useProductMeta from '@hashicorp/platform-product-meta'
+import { IconArrowRight16 } from '@hashicorp/flight-icons/svg-react/arrow-right-16'
+import InlineAlert from 'components/inline-alert'
+import ButtonLink from 'components/button-link'
+import StandaloneLink from 'components/standalone-link'
 import { ProductSlug } from 'types/products'
 import { isContentDeployPreview } from 'lib/env-checks'
 import getIsBetaProduct from 'lib/get-is-beta-product'
@@ -49,18 +53,30 @@ export default function DevDotOptIn() {
 
 	return (
 		<div className={s.container}>
-			<IconAlertCircleFill16 className={s.icon} />
-			<p className={s.alert}>
-				The {name} website is being redesigned to help you find what you are
-				looking for more effectively.
-				<a
-					className={s.optInLink}
-					href={getDevDotLink(slug, asPath)}
-					onClick={handleOptIn}
-				>
-					Join the Beta
-				</a>
-			</p>
+			<InlineAlert
+				icon={<IconAlertCircleFill16 />}
+				color="highlight"
+				title="HashiCorp Developer, a unified practitioner experience is launching soon!"
+				description={`${name} Docs content is being improved and migrated into our new developer experience. The migration will take place on <00/00/0000 at 00:00>`}
+				actions={[
+					<ButtonLink
+						key="Migrate to HashiCorp Developer Now"
+						text="Migrate to HashiCorp Developer Now"
+						href={getDevDotLink(slug, asPath)}
+						// onClick={handleOptIn}
+						color="secondary"
+						size="small"
+					/>,
+					<StandaloneLink
+						key="Learn More"
+						icon={<IconArrowRight16 />}
+						iconPosition="trailing"
+						text="Learn More"
+						href=""
+						color="secondary"
+					/>,
+				]}
+			/>
 		</div>
 	)
 }
