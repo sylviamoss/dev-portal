@@ -22,5 +22,5 @@ export interface InlineAlertProps {
 	/**
 	 * Optional alert CTAs
 	 */
-	actions?: Array<ReactNode>
+	actions?: ReactNode
 }
