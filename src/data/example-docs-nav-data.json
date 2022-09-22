@@ -1,0 +1,11 @@
+[
+	{
+		"title": "HashiCorp Developer Example Docs",
+		"routes": [
+			{
+				"title": "Example",
+				"path": "example"
+			}
+		]
+	}
+]
