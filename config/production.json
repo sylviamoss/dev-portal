@@ -8,7 +8,9 @@
 			"boundary",
 			"consul",
 			"nomad",
+      "packer",
 			"terraform",
+			"vagrant",
 			"vault",
 			"waypoint"
 		],
