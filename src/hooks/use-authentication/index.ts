@@ -55,8 +55,8 @@ const useAuthentication = (
 		delete session.user
 
 		const segmentUserId = safeGetSegmentId()
-		if (segmentUserId !== session.id) {
-			// 	analytics?.identify(
+		if (segmentUserId !== session.accessToken) {
+			// 	analytics?.accessToken(
 			// 		session.id,
 			// 		{
 			// 			email: user.email,
