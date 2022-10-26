@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
 import { IconSignOut16 } from '@hashicorp/flight-icons/svg-react/sign-out-16'
 import Button from 'components/button'
 import usePreloadNextDynamic from 'hooks/use-preload-next-dynamic'
-import { safeAnalyticsTrack, safeGetSegmentId } from 'lib/analytics'
+import { safeAnalyticsTrack, safeGetSegmentAnonymousId } from 'lib/analytics'
 import { OptInOutProps } from './types'
 import { PLATFORM_OPTIONS, postFormData } from './helpers'
 import OptOutForm from './components/opt-out-form'
@@ -34,7 +34,7 @@ export default function OptInOut({ platform, redirectPath }: OptInOutProps) {
 	const handleOptOut = useCallback(
 		async (state: OptOutFormState) => {
 			await postFormData({
-				segment_anonymous_id: safeGetSegmentId(),
+				segment_anonymous_id: safeGetSegmentAnonymousId(),
 				primary_opt_out_reason: state.optOutReason,
 				details: state.optOutDetails,
 				opt_out_page_url: new URL(
