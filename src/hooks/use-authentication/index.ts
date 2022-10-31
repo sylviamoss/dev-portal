@@ -9,7 +9,7 @@ import {
 import { useFlags } from 'flags/client'
 import { UseAuthenticationOptions, UseAuthenticationResult } from './types'
 import { signInWrapper, signOutWrapper, signUp } from './helpers'
-import { safeGetSegmentId } from 'lib/analytics'
+import { safeGetSegmentAnonymousId, safeGetSegmentId } from 'lib/analytics'
 
 export const DEFAULT_PROVIDER_ID = ValidAuthProviderId.CloudIdp
 
@@ -54,14 +54,19 @@ const useAuthentication = (
 		user = data.user
 		delete session.user
 
+		const anonSegmentUserId = safeGetSegmentAnonymousId()
 		const segmentUserId = safeGetSegmentId()
-		if (segmentUserId && segmentUserId !== session.id) {
+
+		// check if anonymousId exists. userId will be null until set in identify.
+		if (anonSegmentUserId && segmentUserId !== session.id) {
+			console.log('identify')
 			analytics?.identify(
 				session.id,
 				{
 					email: user.email,
-					leadSource: 'DevPortal Sign Up',
+					name: user.name,
 					devPortalSignUp: true,
+					createdAt: Date.now().toString(),
 				},
 				{
 					// This limits PII flow to only Marketo as per Security and data engineering
