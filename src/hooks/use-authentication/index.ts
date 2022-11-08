@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { saveAndLoadAnalytics } from '@hashicorp/react-consent-manager'
 import { preferencesSavedAndLoaded } from '@hashicorp/react-consent-manager/util/cookies'
@@ -6,7 +7,7 @@ import { SessionData, UserData, ValidAuthProviderId } from 'types/auth'
 import { useFlags } from 'flags/client'
 import { useDebuggingState } from 'contexts/debugging-state'
 import { UseAuthenticationOptions, UseAuthenticationResult } from './types'
-import { signInWrapper, signOutWrapper, signUp } from './helpers'
+import { makeSignIn, makeSignOut, signUp } from './helpers'
 
 export const DEFAULT_PROVIDER_ID = ValidAuthProviderId.CloudIdp
 
@@ -23,9 +24,21 @@ const useAuthentication = (
 	const { state: debuggingState } = useDebuggingState()
 	const enableDebugging = !!flags?.showDebugUserMenuItems
 
+	// Get router path for `signIn` and `signOut` `callbackUrl`s
+	const router = useRouter()
+
+	// Set up memoized `signIn` and `signOut` callbacks
+	const signIn = useMemo(
+		() => makeSignIn({ routerPath: router.asPath }),
+		[router.asPath]
+	)
+	const signOut = useMemo(
+		() => makeSignOut({ routerPath: router.asPath }),
+		[router.asPath]
+	)
+
 	// Get option properties from `options` parameter
-	const { isRequired = false, onUnauthenticated = () => signInWrapper() } =
-		options
+	const { isRequired = false, onUnauthenticated = () => signIn() } = options
 
 	// Pull data and status from next-auth's hook, and pass options
 	const { data, status } = useSession({
@@ -66,8 +79,8 @@ const useAuthentication = (
 		session,
 		showAuthenticatedUI,
 		showUnauthenticatedUI,
-		signIn: signInWrapper,
-		signOut: signOutWrapper,
+		signIn,
+		signOut,
 		signUp,
 		status,
 		user,
