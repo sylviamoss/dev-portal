@@ -22,6 +22,7 @@ import type { CustomAppProps, CustomAppContext } from 'types/_app'
 import {
 	CurrentContentTypeProvider,
 	CurrentProductProvider,
+	DebuggingStateProvider,
 	DeviceSizeProvider,
 } from 'contexts'
 import fetchLayoutProps, {
@@ -102,38 +103,42 @@ export default function App({
 	}
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<SSRProvider>
-				<CurrentContentTypeProvider currentContentType={currentContentType}>
-					<ErrorBoundary FallbackComponent={DevDotClient}>
-						<SessionProvider session={session}>
-							<DeviceSizeProvider>
-								<CurrentProductProvider currentProduct={currentProduct}>
-									<CodeTabsProvider>
-										<HeadMetadata {...pageProps.metadata} host={host} />
-										<LazyMotion
-											features={() =>
-												import('lib/framer-motion-features').then(
-													(mod) => mod.default
-												)
-											}
-											strict={process.env.NODE_ENV === 'development'}
-										>
-											<Layout {...allLayoutProps} data={allLayoutProps}>
-												<Component {...pageProps} />
-											</Layout>
-											<Toaster />
-											{showProductSwitcher ? <PreviewProductSwitcher /> : null}
-											<ReactQueryDevtools />
-										</LazyMotion>
-									</CodeTabsProvider>
-								</CurrentProductProvider>
-							</DeviceSizeProvider>
-						</SessionProvider>
-					</ErrorBoundary>
-				</CurrentContentTypeProvider>
-			</SSRProvider>
-		</QueryClientProvider>
+		<DebuggingStateProvider>
+			<QueryClientProvider client={queryClient}>
+				<SSRProvider>
+					<CurrentContentTypeProvider currentContentType={currentContentType}>
+						<ErrorBoundary FallbackComponent={DevDotClient}>
+							<SessionProvider session={session}>
+								<DeviceSizeProvider>
+									<CurrentProductProvider currentProduct={currentProduct}>
+										<CodeTabsProvider>
+											<HeadMetadata {...pageProps.metadata} host={host} />
+											<LazyMotion
+												features={() =>
+													import('lib/framer-motion-features').then(
+														(mod) => mod.default
+													)
+												}
+												strict={process.env.NODE_ENV === 'development'}
+											>
+												<Layout {...allLayoutProps} data={allLayoutProps}>
+													<Component {...pageProps} />
+												</Layout>
+												<Toaster />
+												{showProductSwitcher ? (
+													<PreviewProductSwitcher />
+												) : null}
+												<ReactQueryDevtools />
+											</LazyMotion>
+										</CodeTabsProvider>
+									</CurrentProductProvider>
+								</DeviceSizeProvider>
+							</SessionProvider>
+						</ErrorBoundary>
+					</CurrentContentTypeProvider>
+				</SSRProvider>
+			</QueryClientProvider>
+		</DebuggingStateProvider>
 	)
 }
 
