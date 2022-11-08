@@ -21,7 +21,7 @@ const UserDropdownDebuggingItems = () => {
 					setDebuggingState((prevState) => {
 						return {
 							...prevState,
-							error: hasError ? 'TEST ERROR' : undefined,
+							error: prevState.hasError ? undefined : 'TEST ERROR',
 						}
 					})
 				}}

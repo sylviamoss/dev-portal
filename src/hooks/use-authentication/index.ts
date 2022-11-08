@@ -39,7 +39,7 @@ const useAuthentication = (
 	const showAuthenticatedUI = isAuthenticated
 	const showUnauthenticatedUI = !isLoading && !isAuthenticated
 	const preferencesLoaded = preferencesSavedAndLoaded()
-	const hasError = enableDebugging ? debuggingState?.error : data?.error
+	const hasError = enableDebugging ? !!debuggingState?.error : !!data?.error
 
 	// We accept consent manager on the user's behalf. As per Legal & Compliance,
 	// signing-in means a user is accepting our privacy policy and so we can
