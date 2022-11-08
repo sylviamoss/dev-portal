@@ -22,6 +22,7 @@ export default function Dialog({
 	ariaDescribedBy,
 	children,
 	contentClassName,
+	isDismissable = true,
 	isOpen,
 	label,
 	onDismiss,
@@ -44,7 +45,7 @@ export default function Dialog({
 					key="overlay"
 					className={classNames(s.animatedDialogOverlay, s[variant])}
 					isOpen={isOpen}
-					onDismiss={onDismiss}
+					onDismiss={isDismissable ? onDismiss : undefined}
 					{...overlayMotionProps}
 				>
 					<div
