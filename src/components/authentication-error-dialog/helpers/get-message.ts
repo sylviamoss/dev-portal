@@ -1,4 +1,10 @@
-const getMessage = (routerPath: string) => {
+import { NextRouter } from 'next/router'
+
+/**
+ * Generates the `AuthenticationErrorDialog` body message based on the given
+ * `routerPath`.
+ */
+const getMessage = (routerPath: NextRouter['asPath']) => {
 	let message = 'Would you like to retry signing in?'
 
 	if (routerPath === '/profile/bookmarks') {
