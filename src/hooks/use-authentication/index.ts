@@ -9,6 +9,16 @@ import { useDebuggingState } from 'contexts/debugging-state'
 import { UseAuthenticationOptions, UseAuthenticationResult } from './types'
 import { makeSignIn, makeSignOut, signUp } from './helpers'
 
+/**
+ * Constants.
+ *
+ * Notes:
+ *  - `DEBUGGING_ERROR_PROPERTY_NAME` is used to effectively namespace a
+ *    property that this hooks reads from the debugging state. Namespacing
+ *    properties should help prevent unrelated parts of the app from using the
+ *    same properties.
+ */
+export const DEBUGGING_ERROR_PROPERTY_NAME = 'emulatedUseAuthenticationError'
 export const DEFAULT_PROVIDER_ID = ValidAuthProviderId.CloudIdp
 
 /**
@@ -22,7 +32,6 @@ const useAuthentication = (
 ): UseAuthenticationResult => {
 	const { flags } = useFlags()
 	const { state: debuggingState } = useDebuggingState()
-	const enableDebugging = !!flags?.showDebugUserMenuItems
 
 	// Get router path for `signIn` and `signOut` `callbackUrl`s
 	const router = useRouter()
@@ -52,7 +61,16 @@ const useAuthentication = (
 	const showAuthenticatedUI = isAuthenticated
 	const showUnauthenticatedUI = !isLoading && !isAuthenticated
 	const preferencesLoaded = preferencesSavedAndLoaded()
-	const hasError = enableDebugging ? !!debuggingState?.error : !!data?.error
+
+	/**
+	 * If the `showDebugUserMenuItems` feature flag is enabled, then we `hasError`
+	 * is determined by whether or not the app's debugging state has an error in
+	 * it. Otherwise, we check whether for an error in the session `data` object.
+	 */
+	const enableDebugging = !!flags?.showDebugUserMenuItems
+	const hasError = enableDebugging
+		? debuggingState && debuggingState[DEBUGGING_ERROR_PROPERTY_NAME]
+		: data && data.error
 
 	// We accept consent manager on the user's behalf. As per Legal & Compliance,
 	// signing-in means a user is accepting our privacy policy and so we can
