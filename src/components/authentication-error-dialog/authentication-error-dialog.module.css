@@ -1,0 +1,10 @@
+.title {
+	margin-bottom: 4px;
+}
+
+.buttonsContainer {
+	align-items: center;
+	display: flex;
+	gap: 16px;
+	margin-top: 24px;
+}
