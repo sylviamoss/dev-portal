@@ -4,10 +4,11 @@ import redirects from 'data/_redirects.generated.json'
 import setGeoCookie from '@hashicorp/platform-edge-utils/lib/set-geo-cookie'
 import { HOSTNAME_MAP } from 'constants/hostname-map'
 import { getEdgeFlags } from 'flags/edge'
+import optInRedirectChecks from '.generated/opt-in-redirect-checks'
 
 function determineProductSlug(req: NextRequest): string {
 	// .io preview on dev portal
-	const proxiedSiteCookie = req.cookies.get('hc_dd_proxied_site')
+	const proxiedSiteCookie = req.cookies.get('hc_dd_proxied_site')?.value
 	const proxiedProduct = HOSTNAME_MAP[proxiedSiteCookie]
 
 	if (proxiedProduct) {
@@ -24,10 +25,12 @@ function determineProductSlug(req: NextRequest): string {
 }
 
 function setHappyKitCookie(
-	cookie: Parameters<NextResponse['cookies']['set']>,
+	cookie: { args: Parameters<NextResponse['cookies']['set']> },
 	response: NextResponse
 ): NextResponse {
-	response.cookies.set(...cookie)
+	if (cookie) {
+		response.cookies.set(...cookie.args)
+	}
 	return response
 }
 
@@ -37,6 +40,8 @@ function setHappyKitCookie(
  * - Handling simple one-to-one redirects for .io routes
  */
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
+	const { geo } = req
+
 	const label = `[middleware] ${req.nextUrl.pathname}`
 	console.time(label)
 
@@ -69,10 +74,32 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
 	}
 
 	/**
+	 * DO NOT REMOVE THIS BLOCK
+	 *
+	 * Redirect product site docs paths to the relevant developer paths in production.
+	 */
+	if (process.env.HASHI_ENV === 'production') {
+		const url = req.nextUrl.clone()
+
+		if (optInRedirectChecks[product]?.test(url.pathname)) {
+			const redirectUrl = new URL(__config.dev_dot.canonical_base_url)
+			redirectUrl.pathname = `${product}${url.pathname}`
+			redirectUrl.search = url.search
+
+			// The GA redirects should be permanent
+			const response = NextResponse.redirect(redirectUrl, 308)
+
+			console.timeEnd(label)
+			return response
+		}
+	}
+
+	/**
 	 * We are running A/B tests on a subset of routes, so we are limiting the call to resolve flags from HappyKit to only those routes. This limits the impact of any additional latency to the routes which need the data.
 	 */
 	if (
-		['vault', 'packer', 'consul'].includes(product) &&
+		geo?.country === 'US' &&
+		['vault', 'consul'].includes(product) &&
 		['/'].includes(req.nextUrl.pathname)
 	) {
 		try {
@@ -80,32 +107,22 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
 			const { flags, cookie } = edgeFlags
 
 			if (product === 'vault' && req.nextUrl.pathname === '/') {
-				if (flags?.ioHomeHeroCtas) {
+				if (flags?.ioHomeHeroAlt) {
 					const url = req.nextUrl.clone()
-					url.pathname = '/_proxied-dot-io/vault/without-cta-links'
-					response = setHappyKitCookie(cookie.args, NextResponse.rewrite(url))
+					url.pathname = '/_proxied-dot-io/vault/with-alt-hero'
+					response = setHappyKitCookie(cookie, NextResponse.rewrite(url))
 				} else {
-					response = setHappyKitCookie(cookie.args, NextResponse.next())
-				}
-			}
-
-			if (product === 'packer' && req.nextUrl.pathname === '/') {
-				if (flags?.ioHomeHeroCtas) {
-					const url = req.nextUrl.clone()
-					url.pathname = '/_proxied-dot-io/packer/without-cta-links'
-					response = setHappyKitCookie(cookie.args, NextResponse.rewrite(url))
-				} else {
-					response = setHappyKitCookie(cookie.args, NextResponse.next())
+					response = setHappyKitCookie(cookie, NextResponse.next())
 				}
 			}
 
 			if (product === 'consul' && req.nextUrl.pathname === '/') {
-				if (flags?.ioHomeHeroCtas) {
+				if (flags?.ioHomeHeroAlt) {
 					const url = req.nextUrl.clone()
-					url.pathname = '/_proxied-dot-io/consul/without-cta-links'
-					response = setHappyKitCookie(cookie.args, NextResponse.rewrite(url))
+					url.pathname = '/_proxied-dot-io/consul/with-alt-hero'
+					response = setHappyKitCookie(cookie, NextResponse.rewrite(url))
 				} else {
-					response = setHappyKitCookie(cookie.args, NextResponse.next())
+					response = setHappyKitCookie(cookie, NextResponse.next())
 				}
 			}
 		} catch {

@@ -1,5 +1,4 @@
 import React from 'react'
-import codeBlockPrimitives from '@hashicorp/react-code-block/mdx'
 import EnterpriseAlertBase from '@hashicorp/react-enterprise-alert'
 import { useCurrentProduct } from 'contexts'
 import {
@@ -19,6 +18,14 @@ import {
 	MdxP,
 	MdxInlineCode,
 	MdxBlockquote,
+	MdxTryHcpCallout,
+	MdxTip,
+	MdxHighlight,
+	MdxNote,
+	MdxWarning,
+	MdxCodeBlockConfig,
+	MdxCodeTabs,
+	MdxPre,
 } from 'components/dev-dot-content/mdx-components'
 import Image from 'components/image'
 import { ImageProps } from 'components/image/types'
@@ -50,17 +57,14 @@ function makeImageElement({ noBorder }: { noBorder: ImageProps['noBorder'] }) {
 // Purely for sharing between the two functions. Once `createMdxProvider` is
 // deprecated, this can be moved inline.
 function _defaultComponents() {
-	const { CodeBlockConfig, CodeTabs, pre } = codeBlockPrimitives({
-		theme: 'dark',
-	})
 	return {
 		ImageConfig,
 		Tabs: MdxTabs,
 		Tab: MdxTab,
 		EnterpriseAlert,
-		CodeBlockConfig,
-		CodeTabs,
-		pre,
+		CodeBlockConfig: MdxCodeBlockConfig,
+		CodeTabs: MdxCodeTabs,
+		pre: MdxPre,
 		inlineCode: MdxInlineCode,
 		a: MdxA,
 		blockquote: MdxBlockquote,
@@ -76,6 +80,11 @@ function _defaultComponents() {
 		h6: MdxH6,
 		p: MdxP,
 		table: MdxTable,
+		TryHcpCallout: MdxTryHcpCallout,
+		Tip: MdxTip,
+		Highlight: MdxHighlight,
+		Note: MdxNote,
+		Warning: MdxWarning,
 	}
 }
 

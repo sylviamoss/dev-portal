@@ -28,10 +28,6 @@ describe('getNavItems', () => {
 		expect(getNavItems(testWaypointData)).toMatchInlineSnapshot(`
 		Array [
 		  Object {
-		    "label": "Home",
-		    "url": "/waypoint",
-		  },
-		  Object {
 		    "iconColorTheme": "waypoint",
 		    "items": Array [
 		      Object {
@@ -62,7 +58,7 @@ describe('getNavItems', () => {
 		  },
 		  Object {
 		    "label": "Try Cloud",
-		    "openInNewTab": true,
+		    "opensInNewTab": true,
 		    "url": "https://portal.cloud.hashicorp.com/sign-up",
 		  },
 		]
@@ -189,10 +185,6 @@ describe('getNavItems', () => {
 		expect(getNavItems(testTerraformData)).toMatchInlineSnapshot(`
 		Array [
 		  Object {
-		    "label": "Home",
-		    "url": "/terraform",
-		  },
-		  Object {
 		    "iconColorTheme": "terraform",
 		    "items": Array [
 		      Object {
@@ -258,12 +250,12 @@ describe('getNavItems', () => {
 		  },
 		  Object {
 		    "label": "Registry",
-		    "openInNewTab": true,
+		    "opensInNewTab": true,
 		    "url": "https://registry.terraform.io/",
 		  },
 		  Object {
 		    "label": "Try Cloud",
-		    "openInNewTab": true,
+		    "opensInNewTab": true,
 		    "url": "https://app.terraform.io/public/signup/account",
 		  },
 		]
@@ -286,10 +278,6 @@ describe('getNavItems', () => {
 		expect(getNavItems(testHCPData)).toMatchInlineSnapshot(`
 		      Array [
 		        Object {
-		          "label": "Home",
-		          "url": "/hcp",
-		        },
-		        Object {
 		          "label": "Documentation",
 		          "url": "/hcp/docs",
 		        },
@@ -299,7 +287,7 @@ describe('getNavItems', () => {
 		        },
 		        Object {
 		          "label": "Try Cloud",
-		          "openInNewTab": true,
+		          "opensInNewTab": true,
 		          "url": "https://portal.cloud.hashicorp.com/sign-up",
 		        },
 		      ]
